@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from PyQt4 import QtGui, QtCore
-from PyQt4.QtCore import Qt, QModelIndex
+from PyQt5 import QtCore
+from PyQt5.QtCore import Qt, QModelIndex
 
 ## Generic tree models
 # from http://www.hardcoded.net/articles/using_qtreeview_with_qabstractitemmodel.htm

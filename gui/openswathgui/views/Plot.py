@@ -35,9 +35,9 @@ $Authors: Hannes Roest$
 --------------------------------------------------------------------------
 """
 
-from PyQt4 import QtGui, Qt, QtCore
-from PyQt4.Qwt5 import QwtPlotItem
-import PyQt4.Qwt5 as Qwt
+from PyQt5 import Qt, QtCore, QtGui
+from qwt import QwtPlotItem
+from PyQt5 import Qwt
 
 # There are two implementations of the plotting view, one uses guiqwt (may not
 # be present on all systems) and the other one uses plain Qwt (should be safer)
@@ -282,9 +282,13 @@ class QwtMultiLinePlot(Qwt.QwtPlot):
 
         picker_on = Qwt.QwtPicker.AlwaysOn
         picker_on = Qwt.QwtPicker.AlwaysOff
+        #self.zoomer = Qwt.QwtPlotZoomer(Qwt.QwtPlot.xBottom,
+        #                           Qwt.QwtPlot.yLeft,
+        #                           Qwt.QwtPicker.DragSelection,
+        #                           picker_on,
+        #                           self.canvas())
         self.zoomer = Qwt.QwtPlotZoomer(Qwt.QwtPlot.xBottom,
                                    Qwt.QwtPlot.yLeft,
-                                   Qwt.QwtPicker.DragSelection,
                                    picker_on,
                                    self.canvas())
         self.zoomer.setRubberBandPen(QtGui.QPen(Qt.Qt.black))

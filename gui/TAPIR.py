@@ -49,8 +49,8 @@ if __name__ == '__main__':
         print ("Could not import guiqwt, will try to use Qwt only.")
         have_guiqwt = False
 
-from PyQt4 import QtGui, QtCore
-from PyQt4.QtCore import Qt, QModelIndex
+from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import Qt, QModelIndex
 
 TAPIR_VERSION = "1.2"
 
@@ -78,12 +78,12 @@ from openswathgui.models.PeptideTree import PeptideTree
 ## Views for the plots and the peptide tree (on the right)
 #
 from openswathgui.views.PeptideTree import PeptidesTreeView
-from openswathgui.views.Plot import have_guiqwt 
+from openswathgui.views.Plot import have_guiqwt
 
 # 
 ## The widget for the graphing area on the right
 #
-class GraphArea(QtGui.QWidget):
+class GraphArea(QtWidgets.QWidget):
     """
     The Graph Area is displayed on the right side of the main area (see :class:`.ApplicationView`)
 
@@ -132,7 +132,7 @@ class GraphArea(QtGui.QWidget):
         self.c = comm
 
     def _initUI(self):
-        self.layout = QtGui.QGridLayout(self)
+        self.layout = QtWidgets.QGridLayout(self)
 
     def _delete_all(self):
         for i in range(self.layout.count()):
@@ -245,7 +245,7 @@ class GraphArea(QtGui.QWidget):
 #
 ## Peptide Tree Widget (left side)
 # 
-class PeptideTreeWidget(QtGui.QWidget):
+class PeptideTreeWidget(QtWidgets.QWidget):
     """
     The Peptide Tree Widget is displayed on the left side of the main area (see
     :class:`.ApplicationView`). It consists of a :class:`.PeptidesTreeView`
@@ -300,9 +300,9 @@ class PeptideTreeWidget(QtGui.QWidget):
         ## self.treeView.setModel(self.pProxyModel)
         ## self.treeView.setSortingEnabled(True)
 
-        searchbox_layout = QtGui.QHBoxLayout()
-        self.treeLineEdit = QtGui.QLineEdit()
-        self.treeComboBox = QtGui.QComboBox()
+        searchbox_layout = QtWidgets.QHBoxLayout()
+        self.treeLineEdit = QtWidgets.QLineEdit()
+        self.treeComboBox = QtWidgets.QComboBox()
         # Populate the ComboBox
         for i in range(self._precursor_model.columnCount(self)):
             self.treeComboBox.addItem(self._precursor_model.headerData(i, Qt.Horizontal, Qt.DisplayRole))
@@ -311,7 +311,7 @@ class PeptideTreeWidget(QtGui.QWidget):
         searchbox_layout.addWidget(self.treeComboBox) 
 
         # Combine the tree and the searchbox
-        final_layout = QtGui.QVBoxLayout()
+        final_layout = QtWidgets.QVBoxLayout()
         final_layout.addWidget(self.treeView)
         final_layout.addLayout(searchbox_layout)
         self.setLayout(final_layout)
@@ -374,13 +374,13 @@ class PeptideTreeWidget(QtGui.QWidget):
 
         self.treeView.selectAndScrollTo(model_idx)
 
-    @QtCore.pyqtSlot(QtGui.QItemSelectionModel, QtGui.QItemSelectionModel)
+    @QtCore.pyqtSlot()
     def treeViewSelectionChangedSlot(self, newvalue, oldvalue):
         if len(newvalue.indexes()) == 0 :
             return
 
         # assert that the the underlying selected element is always the same. 
-        assert isinstance(newvalue, QtGui.QItemSelection)
+        assert isinstance(newvalue, QtCore.QItemSelection)
         assert all(x.internalPointer() == newvalue.indexes()[0].internalPointer() for x in newvalue.indexes())
         self.selectionChanged.emit(newvalue.indexes()[0])
 
@@ -416,7 +416,7 @@ class PeptideTreeWidget(QtGui.QWidget):
 #
 ## Main Widget
 # 
-class ApplicationView(QtGui.QWidget):
+class ApplicationView(QtWidgets.QWidget):
     """
     The main/central widget for the application which is directly called from the :class:`.MainWindow`.
 
@@ -466,11 +466,11 @@ class ApplicationView(QtGui.QWidget):
 
         # Do the main application (graphing area on the right side)
         self.graph_layout = GraphArea(settings.use_guiqwt)
-        horizontal_splitter = QtGui.QSplitter(QtCore.Qt.Horizontal)
+        horizontal_splitter = QtWidgets.QSplitter(QtCore.Qt.Horizontal)
         horizontal_splitter.addWidget(self.leftside)
         horizontal_splitter.addWidget(self.graph_layout)
 
-        hbox = QtGui.QHBoxLayout()
+        hbox = QtWidgets.QHBoxLayout()
         hbox.addWidget(horizontal_splitter)
 
         self.setLayout(hbox)
@@ -523,13 +523,13 @@ class Settings(object):
 #
 ## Configuration Dialog
 # 
-class ConfigDialog(QtGui.QDialog):
+class ConfigDialog(QtWidgets.QDialog):
     """
     Configuration Dialog 
     """
 
     def __init__(self, parent, settings):
-        QtGui.QDialog.__init__(self, parent)
+        QtWidgets.QDialog.__init__(self, parent)
         self.settings = settings
         self.parent = parent
         self._initUI()
@@ -540,11 +540,11 @@ class ConfigDialog(QtGui.QDialog):
         """
 
         if not have_guiqwt and self.use_guiqwt.isChecked():
+            # FIXME Ambiguous syntax, can't refactor it
+            # FIXME Ambiguous syntax, can't refactor it
+            # FIXME Ambiguous syntax, can't refactor it
             box = QtGui.QMessageBox.about(self, "Error", "QtGui is not available, please remove it.")
-            box.setIcont(QtGui.QMessageBox.Critical)
-            return
-
-        self.settings.window_title = str(self.window_title.text())
+            box = QtGui.QMessageBox.about(self, "Error", " is not available, please remove it.")
         self.settings.nr_rows = int(self.nr_rows.text())
         self.settings.show_legend = self.show_legend.isChecked()
         self.settings.draw_transitions = self.draw_transitions.isChecked()
@@ -559,20 +559,20 @@ class ConfigDialog(QtGui.QDialog):
         # contentsWidget = QtGui.QListWidget()
 
         # Close button
-        self.closeButton = QtGui.QPushButton("Close");
+        self.closeButton = QtWidgets.QPushButton("Close");
         self.closeButton.clicked.connect(self.closeAndSave)
         # connect(closeButton, SIGNAL(clicked()), this, SLOT(close()));
 
         # Left side layout
-        updateGroup = QtGui.QGroupBox("TAPIR settings");
-        self.show_legend = QtGui.QCheckBox("Show legend");
-        self.draw_transitions = QtGui.QCheckBox("Draw individual transitions");
-        self.autoscale_y_axis = QtGui.QCheckBox("Autoscale y axis");
-        self.use_guiqwt = QtGui.QCheckBox("Use guiqwt advanced graphics (slower)");
-        label_rows = QtGui.QLabel("Number of window rows");
-        self.nr_rows = QtGui.QLineEdit();
-        label_rows = QtGui.QLabel("Window Title");
-        self.window_title = QtGui.QLineEdit();
+        updateGroup = QtWidgets.QGroupBox("TAPIR settings");
+        self.show_legend = QtWidgets.QCheckBox("Show legend");
+        self.draw_transitions = QtWidgets.QCheckBox("Draw individual transitions");
+        self.autoscale_y_axis = QtWidgets.QCheckBox("Autoscale y axis");
+        self.use_guiqwt = QtWidgets.QCheckBox("Use guiqwt advanced graphics (slower)");
+        label_rows = QtWidgets.QLabel("Number of window rows");
+        self.nr_rows = QtWidgets.QLineEdit();
+        label_rows = QtWidgets.QLabel("Window Title");
+        self.window_title = QtWidgets.QLineEdit();
 
         self.show_legend.setChecked( self.settings.show_legend )
         self.draw_transitions.setChecked( self.settings.draw_transitions )
@@ -581,7 +581,7 @@ class ConfigDialog(QtGui.QDialog):
         self.nr_rows.setText( str(self.settings.nr_rows) )
         self.window_title.setText( str(self.settings.window_title) )
 
-        updateLayout = QtGui.QVBoxLayout()
+        updateLayout = QtWidgets.QVBoxLayout()
         updateLayout.addWidget(self.show_legend);
         updateLayout.addWidget(self.draw_transitions);
         updateLayout.addWidget(self.autoscale_y_axis);
@@ -594,15 +594,15 @@ class ConfigDialog(QtGui.QDialog):
         ###################################
         # Composition of elements
         ###################################
-        self.horizontalLayout = QtGui.QHBoxLayout()
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
         # self.horizontalLayout.addWidget(contentsWidget);
         self.horizontalLayout.addWidget(updateGroup);
 
-        self.buttonsLayout = QtGui.QHBoxLayout()
+        self.buttonsLayout = QtWidgets.QHBoxLayout()
         self.buttonsLayout.addStretch(1);
         self.buttonsLayout.addWidget(self.closeButton);
 
-        mainLayout = QtGui.QVBoxLayout()
+        mainLayout = QtWidgets.QVBoxLayout()
         mainLayout.addLayout(self.horizontalLayout);
         mainLayout.addStretch(1);
         mainLayout.addSpacing(12);
@@ -612,13 +612,13 @@ class ConfigDialog(QtGui.QDialog):
 #
 ## About Dialog
 #
-class AboutDialog(QtGui.QDialog):
+class AboutDialog(QtWidgets.QDialog):
     """
     About Dialog
     """
 
     def __init__(self, parent):
-        QtGui.QDialog.__init__(self, parent)
+        QtWidgets.QDialog.__init__(self, parent)
         self.parent = parent
         self._initUI()
 
@@ -634,32 +634,32 @@ class AboutDialog(QtGui.QDialog):
         # contentsWidget = QtGui.QListWidget()
 
         # Close button
-        self.closeButton = QtGui.QPushButton("Close");
+        self.closeButton = QtWidgets.QPushButton("Close");
         self.closeButton.clicked.connect(self.closeAction)
         # connect(closeButton, SIGNAL(clicked()), this, SLOT(close()));
 
         # Left side layout
-        updateGroup = QtGui.QGroupBox("About TAPIR");
-        self.test = QtGui.QLabel("TAPIR version %s\
+        updateGroup = QtWidgets.QGroupBox("About TAPIR");
+        self.test = QtWidgets.QLabel("TAPIR version %s\
         \n\nSoftware for visualization of chromatographic data.\
         \n\nPlease cite: Rost et al. Bioinformatics. 2015.\
         \n\nDeveloped by Hannes Rost." % TAPIR_VERSION);
 
-        updateLayout = QtGui.QVBoxLayout()
+        updateLayout = QtWidgets.QVBoxLayout()
         updateLayout.addWidget(self.test);
         updateGroup.setLayout(updateLayout);
 
         ###################################
         # Composition of elements
         ###################################
-        self.horizontalLayout = QtGui.QHBoxLayout()
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.addWidget(updateGroup);
 
-        self.buttonsLayout = QtGui.QHBoxLayout()
+        self.buttonsLayout = QtWidgets.QHBoxLayout()
         self.buttonsLayout.addStretch(1);
         self.buttonsLayout.addWidget(self.closeButton);
 
-        mainLayout = QtGui.QVBoxLayout()
+        mainLayout = QtWidgets.QVBoxLayout()
         mainLayout.addLayout(self.horizontalLayout);
         mainLayout.addStretch(1);
         mainLayout.addSpacing(12);
@@ -672,7 +672,7 @@ class AboutDialog(QtGui.QDialog):
 #
 ## Main Window
 # 
-class MainWindow(QtGui.QMainWindow):
+class MainWindow(QtWidgets.QMainWindow):
     """
     The main window running the application.
 
@@ -712,28 +712,28 @@ class MainWindow(QtGui.QMainWindow):
         # Actions
         ###################################
         openFileIcon = QtGui.QIcon()
-        openFileIcon.addPixmap(self.style().standardPixmap(QtGui.QStyle.SP_DirOpenIcon),
+        openFileIcon.addPixmap(self.style().standardPixmap(QtWidgets.QStyle.SP_DirOpenIcon),
                 QtGui.QIcon.Normal, QtGui.QIcon.On)
-        openFile = QtGui.QAction(openFileIcon, 'Open', self)
+        openFile = QtWidgets.QAction(openFileIcon, 'Open', self)
         openFile.setShortcut('Ctrl+O')
         openFile.setStatusTip('Open new File')
         openFile.triggered.connect(self.showFileLoadDialog)
 
         openSettingsIcon = QtGui.QIcon("")
-        openSettingsIcon.addPixmap(self.style().standardPixmap(QtGui.QStyle.SP_FileIcon),
+        openSettingsIcon.addPixmap(self.style().standardPixmap(QtWidgets.QStyle.SP_FileIcon),
                 QtGui.QIcon.Normal, QtGui.QIcon.On)
-        openSettings = QtGui.QAction(openSettingsIcon, 'Open Settings', self)
+        openSettings = QtWidgets.QAction(openSettingsIcon, 'Open Settings', self)
         openSettings.setStatusTip('Open settings dialog')
         openSettings.triggered.connect(self._showSettings)
 
         exitIcon = QtGui.QIcon("")
-        exitAction = QtGui.QAction(exitIcon, 'Exit', self)
+        exitAction = QtWidgets.QAction(exitIcon, 'Exit', self)
         exitAction.setShortcut('Ctrl+Q')
         exitAction.setStatusTip('Exit application')
         exitAction.triggered.connect(self.close)
 
         ### About
-        helpAction = QtGui.QAction(QtGui.QIcon(""), 'About', self)
+        helpAction = QtWidgets.QAction(QtGui.QIcon(""), 'About', self)
         helpAction.setStatusTip('About TAPIR')
         helpAction.triggered.connect(self._showAboutDialog)
 
@@ -778,7 +778,7 @@ class MainWindow(QtGui.QMainWindow):
         Show the open file dialog to load a new dataset.
         """
 
-        fileList = QtGui.QFileDialog.getOpenFileNames(self, 'Open dataset')
+        fileList = QtWidgets.QFileDialog.getOpenFileNames(self, 'Open dataset')[0]
         self.loadFiles( [str(f) for f in fileList] )
 
     def loadFiles(self, pyFileList, fileType=None):
@@ -867,7 +867,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def _center(self):
         qr = self.frameGeometry()
-        cp = QtGui.QDesktopWidget().availableGeometry().center()
+        cp = QtWidgets.QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
 
@@ -894,7 +894,7 @@ if __name__ == '__main__':
     settings = Settings(options.run_mode, options.use_guiqwt == "True")
 
     # Set up Qt application
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     ex = MainWindow(settings)
 
     # Check whether any options were given on the commandline

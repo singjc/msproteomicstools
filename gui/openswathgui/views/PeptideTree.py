@@ -36,9 +36,9 @@ $Authors: Hannes Roest$
 """
 
 
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtCore, QtGui, QtWidgets
 
-class PeptidesTreeView( QtGui.QTreeView ):
+class PeptidesTreeView( QtWidgets.QTreeView ):
     """
     The Peptide Tree View widget is the view implementation for the left side tree view
     """
@@ -82,8 +82,8 @@ class PeptidesTreeView( QtGui.QTreeView ):
 
         selectionModel = self.selectionModel()
         selectionModel.clearSelection()
-        selectionModel.select(model_idx, QtGui.QItemSelectionModel.Select)
+        selectionModel.select(model_idx, QtCore.QItemSelectionModel.Select)
         self.setSelectionModel(selectionModel)
         # Now scroll to the item
-        self.scrollTo(model_idx, QtGui.QAbstractItemView.PositionAtCenter)
+        self.scrollTo(model_idx, QtWidgets.QAbstractItemView.PositionAtCenter)
 

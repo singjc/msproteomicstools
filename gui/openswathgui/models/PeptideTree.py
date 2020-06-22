@@ -35,8 +35,8 @@ $Authors: Hannes Roest$
 --------------------------------------------------------------------------
 """
 
-from PyQt4 import QtCore 
-from PyQt4.QtCore import Qt, QModelIndex
+from PyQt5 import QtCore
+from PyQt5.QtCore import Qt, QModelIndex
 from .TreeModels import TreeNode
 from .TreeModels import TreeModel
 
